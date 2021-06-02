@@ -10,7 +10,11 @@ server:
   port: 5070
   servlet:
     context-path: /api/flights/pricing
-
+  compression:
+    enabled: true
+    min-response-size: 2048
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain    
+    
 jetty:
   threadPool:
     maxThreads: 10

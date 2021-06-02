@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.twa.flights.api.itineraries.search.connector.configuration.ProviderBetaConnectorConfiguration;
+import com.twa.flights.api.itineraries.search.connector.filter.ConnectorFilter;
 import com.twa.flights.api.itineraries.search.exception.TWAException;
 import com.twa.flights.common.dto.itinerary.ItineraryDTO;
 import com.twa.flights.common.dto.request.AvailabilityRequestDTO;
@@ -44,12 +45,15 @@ public class ProviderBetaConnector {
         HttpClient httpClient = HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Math.toIntExact(configuration.getConnectionTimeout()))
                 .responseTimeout(Duration.ofMillis(configuration.getResponseTimeout()))
-                .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS)));
+                .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS)))
+                .compress(true);
+        ;
 
         ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
 
         WebClient client = WebClient.builder().defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .clientConnector(connector).build();
+                .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "gzip").filter(ConnectorFilter.logRequest())
+                .filter(ConnectorFilter.logResponse()).clientConnector(connector).build();
 
         return client.get()
                 .uri(uriBuilder -> uriBuilder.path(configuration.getHost().concat(SEARCH))

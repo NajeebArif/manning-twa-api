@@ -10,6 +10,10 @@ server:
   port: 9070
   servlet:
     context-path: /api/flights/provider/beta
+  compression:
+    enabled: true
+    min-response-size: 2048
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain    
 
 jetty:
   threadPool:
@@ -30,18 +34,10 @@ chaos:
 spring:
   profiles:
     active: chaos-monkey
-
-redis:
-   host: api-clusters-remote-cache
-   port: 6379   
-     
+        
 connector:
    catalog:
-      host: api-catalog-cache:80
+      host: api-catalog:6070
       responseTimeout: 1000
       connectionTimeout: 1000
       readTimeout: 1000
-cache:
-  configuration:
-    CATALOG_CITY:
-       expireAfterWriteTime: 10 #MINUTES

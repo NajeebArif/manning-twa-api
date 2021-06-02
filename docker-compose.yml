@@ -16,22 +16,6 @@ services:
     environment:
       MYSQL_DATABASE: 'flights_catalog'
       MYSQL_ROOT_PASSWORD: 'muppet'
- 
-  api-catalog-cache:
-    build: varnish/.
-    container_name: api-catalog-cache
-    ports:
-     - 6080:80
-    restart: always    
-    depends_on:
-      - api-catalog
-
-  api-clusters-remote-cache:
-    container_name: api-clusters-remote-cache
-    image: redis:alpine
-    restart: always
-    ports:
-     - 5079:6379
       
   api-clusters:
     build: api-clusters/.

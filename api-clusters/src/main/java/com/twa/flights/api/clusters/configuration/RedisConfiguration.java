@@ -1,7 +1,5 @@
 package com.twa.flights.api.clusters.configuration;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +9,6 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.twa.flights.api.clusters.configuration.settings.RedisSettings;
-import com.twa.flights.api.clusters.dto.CityDTO;
 import com.twa.flights.api.clusters.dto.ClusterSearchDTO;
 import com.twa.flights.api.clusters.serializer.ClusterSearchSerializer;
 
@@ -19,7 +16,7 @@ import com.twa.flights.api.clusters.serializer.ClusterSearchSerializer;
 @ConfigurationProperties
 public class RedisConfiguration {
 
-    private Map<String, RedisSettings> redis;
+    private RedisSettings redis;
 
     private ClusterSearchSerializer clusterSearchSerializer;
 
@@ -28,12 +25,10 @@ public class RedisConfiguration {
         this.clusterSearchSerializer = clusterSearchSerializer;
     }
 
-    // Cache to save all the itineraries in a database
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
-        RedisSettings settings = redis.get("db");
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(settings.getHost(),
-                settings.getPort());
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redis.getHost(),
+                redis.getPort());
         return new JedisConnectionFactory(redisStandaloneConfiguration);
     }
 
@@ -47,28 +42,11 @@ public class RedisConfiguration {
         return redisTemplate;
     }
 
-    // External cache to save the request to catalog
-    @Bean
-    public JedisConnectionFactory catalogJedisConnectionFactory() {
-        RedisSettings settings = redis.get("remote-cache");
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(settings.getHost(),
-                settings.getPort());
-        return new JedisConnectionFactory(redisStandaloneConfiguration);
-    }
-
-    @Bean
-    public RedisTemplate<String, CityDTO> catalogRedisTemplate() {
-        RedisTemplate<String, CityDTO> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(catalogJedisConnectionFactory());
-
-        return redisTemplate;
-    }
-
-    public Map<String, RedisSettings> getRedis() {
+    public RedisSettings getRedis() {
         return redis;
     }
 
-    public void setRedis(Map<String, RedisSettings> redis) {
+    public void setRedis(RedisSettings redis) {
         this.redis = redis;
     }
 }
