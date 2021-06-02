@@ -1,0 +1,74 @@
+[
+  {
+    "itineraryId": "6fe43331-87b7-4197-85c6-f277555388f2",
+    "adults": {
+      "markup": {
+        "percentage": 2,
+        "amount": 114.502
+      },
+      "total": 687.012
+    },
+    "children": {
+      "markup": {
+        "percentage": 2,
+        "amount": 105.226
+      },
+      "total": 631.356
+    },
+    "infants": {
+      "markup": {
+        "percentage": 2,
+        "amount": 49.052
+      },
+      "total": 294.312
+    }
+  },
+  {
+    "itineraryId": "47868866-cdaa-435a-8dfd-f3636304f990",
+    "adults": {
+      "markup": {
+        "percentage": 2,
+        "amount": 175.396
+      },
+      "total": 1052.376
+    },
+    "children": {
+      "markup": {
+        "percentage": 2,
+        "amount": 115.926
+      },
+      "total": 695.556
+    },
+    "infants": {
+      "markup": {
+        "percentage": 2,
+        "amount": 178.574
+      },
+      "total": 1071.444
+    }
+  },
+  {
+    "itineraryId": "015cd54d-8bec-4495-a91b-09cdf0d13ed8",
+    "adults": {
+      "markup": {
+        "percentage": 1,
+        "amount": 27.84
+      },
+      "total": 306.24
+    },
+    "children": {
+      "markup": {
+        "percentage": 1,
+        "amount": 49.223
+      },
+      "total": 541.453
+    },
+    "infants": {
+      "markup": {
+        "percentage": 1,
+        "amount": 75.009
+      },
+      "total": 825.099
+    }
+  }
+]
