@@ -30,7 +30,11 @@ chaos:
 spring:
   profiles:
     active: chaos-monkey
-        
+
+redis:
+   host: api-clusters-remote-cache
+   port: 6379   
+     
 connector:
    catalog:
       host: api-catalog-cache:80
@@ -40,6 +44,4 @@ connector:
 cache:
   configuration:
     CATALOG_CITY:
-       refreshAfterWriteTime: 5 #MINUTES
        expireAfterWriteTime: 10 #MINUTES
-       maxSize: 180

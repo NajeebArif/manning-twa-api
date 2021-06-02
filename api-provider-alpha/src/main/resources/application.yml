@@ -30,7 +30,11 @@ chaos:
 spring:
   profiles:
     active: chaos-monkey
-    
+
+redis:
+   host: localhost
+   port: 5079
+
 connector:
    catalog:
       host: localhost:6070

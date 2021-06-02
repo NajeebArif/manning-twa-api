@@ -31,6 +31,10 @@ spring:
   profiles:
     active: chaos-monkey
     
+redis:
+   host: api-clusters-remote-cache
+   port: 6379
+
 connector:
    catalog:
       host: api-catalog-cache:80

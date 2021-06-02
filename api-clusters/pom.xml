@@ -108,11 +108,6 @@
 
 		<!-- General -->
 		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>caffeine</artifactId>
-		</dependency>
-
-		<dependency>
 		    <groupId>de.codecentric</groupId>
 		    <artifactId>chaos-monkey-spring-boot</artifactId>
 		    <version>${chaos-monkey-spring-boot.version}</version>

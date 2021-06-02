@@ -1,20 +1,22 @@
 package com.twa.flights.api.clusters.configuration.cache;
 
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Lists;
 import com.twa.flights.api.clusters.configuration.settings.CacheSettings;
-import com.twa.flights.api.clusters.connector.CatalogConnector;
+import com.twa.flights.api.clusters.serializer.CitySerializer;
 
 @Configuration
 @EnableCaching
@@ -23,33 +25,32 @@ public class CacheManagerConfiguration {
     public static final String CATALOG_CITY = "CATALOG_CITY";
 
     private final CacheConfiguration cacheConfiguration;
-
-    private final CatalogConnector catalogConnector;
+    private final JedisConnectionFactory catalogJedisConnectionFactory;
+    private final CitySerializer citySerializer;
 
     @Autowired
     public CacheManagerConfiguration(final CacheConfiguration cacheConfiguration,
-            final CatalogConnector catalogConnector) {
+            final JedisConnectionFactory catalogJedisConnectionFactory, final CitySerializer citySerializer) {
         this.cacheConfiguration = cacheConfiguration;
-        this.catalogConnector = catalogConnector;
+        this.catalogJedisConnectionFactory = catalogJedisConnectionFactory;
+        this.citySerializer = citySerializer;
     }
 
     @Bean
     public CacheManager cacheManager() {
-        CacheSettings cacheCitySettings = cacheConfiguration.getCacheSettings(CATALOG_CITY);
-
         SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
-        simpleCacheManager.setCaches(Lists
-                .newArrayList(buildCaffeineCache(CATALOG_CITY, cacheCitySettings, catalogConnector::getCityByCode)));
+        simpleCacheManager.setCaches(Lists.newArrayList(RedisCacheManager.builder(catalogJedisConnectionFactory)
+                .cacheDefaults(redisCacheConfiguration()).build().getCache(CATALOG_CITY)));
 
         return simpleCacheManager;
     }
 
-    public static CaffeineCache buildCaffeineCache(String cacheName, CacheSettings settings,
-            Function<String, Object> serviceCall) {
-
-        return new CaffeineCache(cacheName,
-                Caffeine.newBuilder().refreshAfterWrite(settings.getRefreshAfterWriteTime(), TimeUnit.MINUTES)
-                        .expireAfterWrite(settings.getExpireAfterWriteTime(), TimeUnit.MINUTES)
-                        .maximumSize(settings.getMaxSize()).build(key -> serviceCall.apply(key.toString())));
+    private RedisCacheConfiguration redisCacheConfiguration() {
+        CacheSettings cacheCitySettings = cacheConfiguration.getCacheSettings(CATALOG_CITY);
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(citySerializer))
+                .entryTtl(Duration.ofMinutes(cacheCitySettings.getExpireAfterWriteTime()));
     }
 }

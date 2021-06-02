@@ -31,6 +31,10 @@ spring:
   profiles:
     active: chaos-monkey
     
+redis:
+   host: localhost
+   port: 5079
+
 connector:
    catalog:
       host: localhost:6070
@@ -40,6 +44,4 @@ connector:
 cache:
   configuration:
     CATALOG_CITY:
-       refreshAfterWriteTime: 5 #MINUTES
        expireAfterWriteTime: 10 #MINUTES
-       maxSize: 180

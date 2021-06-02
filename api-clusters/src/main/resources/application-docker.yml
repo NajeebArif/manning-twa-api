@@ -32,8 +32,12 @@ spring:
     active: default
          
 redis:
-   host: api-clusters-db
-   port: 6379    
+   db:
+      host: api-clusters-db
+      port: 6379    
+   remote-cache:
+      host: api-clusters-remote-cache
+      port: 6379        
 
 connector:
    catalog:
@@ -54,6 +58,4 @@ connector:
 cache:
   configuration:
     CATALOG_CITY:
-       refreshAfterWriteTime: 5 #MINUTES
-       expireAfterWriteTime: 10 #MINUTES
-       maxSize: 180      
+       expireAfterWriteTime: 10 #MINUTES    
