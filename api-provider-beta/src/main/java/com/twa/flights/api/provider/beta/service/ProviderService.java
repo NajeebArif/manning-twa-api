@@ -55,7 +55,7 @@ public class ProviderService {
             }
             completedItinerary = Boolean.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Occur an error calculating the flight duration of id {}", itinerary.getId());
+            LOGGER.error("Occur an error calculating the flight duration of id {}", itinerary.getId(), e);
         }
         return completedItinerary;
     }
