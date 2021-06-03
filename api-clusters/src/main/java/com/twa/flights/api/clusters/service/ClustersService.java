@@ -14,6 +14,7 @@ import com.twa.flights.api.clusters.dto.ClusterSearchDTO;
 import com.twa.flights.api.clusters.dto.request.ClustersAvailabilityRequestDTO;
 import com.twa.flights.api.clusters.enums.ExceptionStatus;
 import com.twa.flights.api.clusters.exception.APIException;
+import com.twa.flights.api.clusters.helper.FlightIdGeneratorHelper;
 import com.twa.flights.api.clusters.repository.ClustersRepository;
 import com.twa.flights.common.dto.itinerary.ItineraryDTO;
 
@@ -25,13 +26,15 @@ public class ClustersService {
     private final ItinerariesSearchService itinerariesSearchService;
     private final PricingService pricingService;
     private final ClustersRepository repository;
+    private final FlightIdGeneratorHelper flightIdGeneratorHelper;
 
     @Autowired
     public ClustersService(ItinerariesSearchService itinerariesSearchService, PricingService pricingService,
-            ClustersRepository repository) {
+            ClustersRepository repository, FlightIdGeneratorHelper flightIdGeneratorHelper) {
         this.itinerariesSearchService = itinerariesSearchService;
         this.pricingService = pricingService;
         this.repository = repository;
+        this.flightIdGeneratorHelper = flightIdGeneratorHelper;
     }
 
     public ClusterSearchDTO availability(ClustersAvailabilityRequestDTO request) {
@@ -40,7 +43,13 @@ public class ClustersService {
         ClusterSearchDTO response = null;
 
         if (StringUtils.isEmpty(request.getId())) { // New search
-            response = availabilityFromProviders(request);
+            response = repository.get(flightIdGeneratorHelper.generate(request));// Obtain info from a previous search
+            if (response == null) {
+                response = availabilityFromProviders(request);
+            } else {
+                // Limit the size
+                response.setItineraries(response.getItineraries().stream().limit(request.getAmount()).collect(Collectors.toList()));
+            }
         } else { // Pagination old search
             response = availabilityFromDatabase(request);
         }
