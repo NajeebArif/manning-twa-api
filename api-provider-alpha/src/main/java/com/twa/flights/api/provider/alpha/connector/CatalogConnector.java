@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.twa.flights.api.provider.alpha.connector.configuration.CatalogConnectorConfiguration;
-import com.twa.flights.api.provider.alpha.connector.filter.ConnectorFilter;
 import com.twa.flights.api.provider.alpha.dto.CityDTO;
 import com.twa.flights.api.provider.alpha.exception.TWAException;
 
@@ -43,15 +42,12 @@ public class CatalogConnector {
         HttpClient httpClient = HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Math.toIntExact(configuration.getConnectionTimeout()))
                 .responseTimeout(Duration.ofMillis(configuration.getResponseTimeout()))
-                .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS)))
-                .compress(true);
-        ;
+                .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS)));
 
         ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
 
         WebClient client = WebClient.builder().defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "gzip").filter(ConnectorFilter.logRequest())
-                .filter(ConnectorFilter.logResponse()).clientConnector(connector).build();
+                .clientConnector(connector).build();
 
         return client.get().uri(configuration.getHost().concat(GET_CITY_BY_CODE).concat(code)).retrieve()
                 .onStatus(HttpStatus::isError, clientResponse -> {
