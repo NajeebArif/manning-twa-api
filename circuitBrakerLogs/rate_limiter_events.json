@@ -1,0 +1,19 @@
+{
+  "name": "resilience4j.ratelimiter.available.permissions",
+  "description": "The number of available permissions",
+  "baseUnit": null,
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 2
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "name",
+      "values": [
+        "provider-alpha"
+      ]
+    }
+  ]
+}

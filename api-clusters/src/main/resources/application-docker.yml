@@ -67,4 +67,15 @@ resilience4j.circuitbreaker:
         - org.springframework.web.reactive.function.client.WebClientRequestException
   backends:
     pricing:
-      baseConfig: default          
+      baseConfig: default
+      
+resilience4j.ratelimiter:
+  configs:
+    default:
+      registerHealthIndicator: true    
+      timeoutDuration: 1000ms
+      limitRefreshPeriod: 10s
+      limitForPeriod: 2                 
+  backends:
+    clusters:
+      baseConfig: default   

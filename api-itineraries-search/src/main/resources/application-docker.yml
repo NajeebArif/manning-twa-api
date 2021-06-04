@@ -61,4 +61,15 @@ resilience4j.circuitbreaker:
     provider-alpha:
       baseConfig: default
     provider-beta:
-      baseConfig: default     
+      baseConfig: default    
+      
+resilience4j.ratelimiter:
+  configs:
+    default:
+      registerHealthIndicator: true    
+      timeoutDuration: 1000ms
+      limitRefreshPeriod: 15s
+      limitForPeriod: 2                 
+  backends:
+    provider-alpha:
+      baseConfig: default          

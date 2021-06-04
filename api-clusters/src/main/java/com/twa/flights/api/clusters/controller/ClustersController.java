@@ -14,6 +14,8 @@ import com.twa.flights.api.clusters.dto.request.ClustersAvailabilityRequestDTO;
 import com.twa.flights.api.clusters.service.ClustersService;
 import com.twa.flights.api.clusters.validator.AvailabilityRequestValidator;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+
 @RestController
 @RequestMapping("/")
 public class ClustersController implements ClustersResources {
@@ -31,12 +33,19 @@ public class ClustersController implements ClustersResources {
     }
 
     @Override
+    @RateLimiter(name = "clusters", fallbackMethod = "fallbackAvailability")
     public ResponseEntity<ClusterSearchDTO> availability(ClustersAvailabilityRequestDTO request) {
         LOGGER.debug("Obtain all the itineraries with price");
         requestValidator.validate(request);
 
         ClusterSearchDTO response = clustersService.availability(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @SuppressWarnings("unused")
+    private ResponseEntity<ClusterSearchDTO> fallbackAvailability(ClustersAvailabilityRequestDTO request,
+            RuntimeException exception) {
+        return new ResponseEntity<>(new ClusterSearchDTO(), HttpStatus.TOO_MANY_REQUESTS);
     }
 
 }

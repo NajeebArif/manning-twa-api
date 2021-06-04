@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.twa.flights.api.itineraries.search.connector.ProviderAlphaConnector;
 import com.twa.flights.common.dto.enums.Provider;
 import com.twa.flights.common.dto.itinerary.ItineraryDTO;
 import com.twa.flights.common.dto.request.AvailabilityRequestDTO;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 @Component
 public class ProviderAlphaFacade implements ProviderFacade {
@@ -27,6 +29,7 @@ public class ProviderAlphaFacade implements ProviderFacade {
     }
 
     @CircuitBreaker(name = "provider-alpha")
+    @RateLimiter(name = "provider-alpha", fallbackMethod = "fallbackAvailability")
     public List<ItineraryDTO> availability(AvailabilityRequestDTO request) {
         LOGGER.debug("Obtain the information about the flights");
         return providerAlphaConnector.availability(request);
@@ -37,4 +40,7 @@ public class ProviderAlphaFacade implements ProviderFacade {
         return Provider.ALPHA;
     }
 
+    public List<ItineraryDTO> fallbackAvailability(AvailabilityRequestDTO request, RuntimeException exception) {
+        return Lists.newArrayList();
+    }
 }
