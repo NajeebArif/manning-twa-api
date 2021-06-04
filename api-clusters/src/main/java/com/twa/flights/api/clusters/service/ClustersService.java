@@ -14,7 +14,6 @@ import com.twa.flights.api.clusters.dto.ClusterSearchDTO;
 import com.twa.flights.api.clusters.dto.request.ClustersAvailabilityRequestDTO;
 import com.twa.flights.api.clusters.enums.ExceptionStatus;
 import com.twa.flights.api.clusters.exception.APIException;
-import com.twa.flights.api.clusters.helper.FlightIdGeneratorHelper;
 import com.twa.flights.api.clusters.repository.ClustersRepository;
 import com.twa.flights.common.dto.itinerary.ItineraryDTO;
 
@@ -23,23 +22,16 @@ public class ClustersService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClustersService.class);
 
-    private static final String BARRIER_PATH = "/barriers/search";
-
     private final ItinerariesSearchService itinerariesSearchService;
     private final PricingService pricingService;
     private final ClustersRepository repository;
-    private final FlightIdGeneratorHelper flightIdGeneratorHelper;
-    private final ZooKeeperService zooKeeperService;
 
     @Autowired
     public ClustersService(ItinerariesSearchService itinerariesSearchService, PricingService pricingService,
-            ClustersRepository repository, FlightIdGeneratorHelper flightIdGeneratorHelper,
-            ZooKeeperService zooKeeperService) {
+            ClustersRepository repository) {
         this.itinerariesSearchService = itinerariesSearchService;
         this.pricingService = pricingService;
         this.repository = repository;
-        this.flightIdGeneratorHelper = flightIdGeneratorHelper;
-        this.zooKeeperService = zooKeeperService;
     }
 
     public ClusterSearchDTO availability(ClustersAvailabilityRequestDTO request) {
@@ -48,54 +40,12 @@ public class ClustersService {
         ClusterSearchDTO response = null;
 
         if (StringUtils.isEmpty(request.getId())) { // New search
-            response = repository.get(flightIdGeneratorHelper.generate(request));// Obtain info from a previous search
-            if (response == null) {
-                response = availabilityFromBarrierOrProvider(request);
-            } else {
-                // Limit the size
-                response.setItineraries(response.getItineraries().stream().limit(request.getAmount()).collect(Collectors.toList()));
-            }
+            response = availabilityFromProviders(request);
         } else { // Pagination old search
             response = availabilityFromDatabase(request);
         }
 
         return response;
-    }
-
-    private ClusterSearchDTO availabilityFromBarrierOrProvider(ClustersAvailabilityRequestDTO request) {
-        ClusterSearchDTO response;
-        final String barrierPath = buildBarrierPath(request);
-
-        if (isBarrierCreated(barrierPath)) {
-            zooKeeperService.waitOnBarrier(barrierPath);
-
-            response = repository.get(flightIdGeneratorHelper.generate(request));// Obtain info from a previous search
-
-            // If itineraries was saved in cache ...
-            if (!response.getItineraries().isEmpty()) {
-                LOGGER.info("Returning {} flights from cache...", response.getItineraries().size());
-                
-                // Limit the size
-                response.setItineraries(response.getItineraries().stream().limit(request.getAmount()).collect(Collectors.toList()));
-                
-                return response;
-            }
-        }
-
-        return availabilityFromProviders(request);
-    }
-
-    private synchronized boolean isBarrierCreated(String barrierPath) {
-
-        if (!zooKeeperService.checkIfBarrierExists(barrierPath)) {
-            return zooKeeperService.createBarrier(barrierPath);
-        }
-
-        return true;
-    }
-
-    private String buildBarrierPath(ClustersAvailabilityRequestDTO request) {
-        return String.format("%s/%s", BARRIER_PATH, flightIdGeneratorHelper.generate(request));
     }
 
     private ClusterSearchDTO availabilityFromProviders(ClustersAvailabilityRequestDTO request) {
@@ -106,13 +56,7 @@ public class ClustersService {
         itineraries = itineraries.stream().sorted((itineraryOne, itineraryTwo) -> itineraryOne.getPriceInfo()
                 .getTotalAmount().compareTo(itineraryTwo.getPriceInfo().getTotalAmount())).collect(Collectors.toList());
 
-        String barrierPath = buildBarrierPath(request);
-        response = repository.insert(request, itineraries, barrierPath);
-
-        // delete the barrier only when not exist results
-        if (itineraries.isEmpty()) {
-            zooKeeperService.deleteBarrier(buildBarrierPath(request));
-        }
+        response = repository.insert(request, itineraries);
 
         // Limit the size
         response.setItineraries(itineraries.stream().limit(request.getAmount()).collect(Collectors.toList()));

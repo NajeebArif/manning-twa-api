@@ -30,14 +30,6 @@ services:
     container_name: api-clusters-db
     image: redis:alpine
     restart: always     
-
-  api-clusters-zookeeper:
-    image: 'docker.io/bitnami/zookeeper:3-debian-10'
-    container_name: api-clusters-zookeeper
-    ports:
-      - '2181:2181'
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
       
   api-itineraries-search:
     build: api-itineraries-search/.

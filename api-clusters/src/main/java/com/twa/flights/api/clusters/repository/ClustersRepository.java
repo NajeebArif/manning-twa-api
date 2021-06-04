@@ -8,7 +8,7 @@ import com.twa.flights.common.dto.request.AvailabilityRequestDTO;
 
 public interface ClustersRepository {
 
-    ClusterSearchDTO insert(AvailabilityRequestDTO query, List<ItineraryDTO> itineraries, String barrierPath);
+    ClusterSearchDTO insert(AvailabilityRequestDTO query, List<ItineraryDTO> itineraries);
 
     ClusterSearchDTO get(String id);
 }

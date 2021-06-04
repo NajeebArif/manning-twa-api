@@ -3,12 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>com.twa.flights.common</groupId>
 		<artifactId>flights-parent</artifactId>
 		<version>1.0.4</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<groupId>com.twa.flights</groupId>
@@ -33,6 +33,7 @@
 		<spring-boot.version>2.4.2</spring-boot.version>
 
 		<!-- General -->
+		<resilience4j.version>1.6.1</resilience4j.version>
 		<chaos-monkey-spring-boot.version>2.3.1</chaos-monkey-spring-boot.version>
 		<orika-core.version>1.5.4</orika-core.version>
 		<springdoc-openapi-ui.version>1.5.5</springdoc-openapi-ui.version>
@@ -98,9 +99,15 @@
 
 		<!-- General -->
 		<dependency>
-		    <groupId>de.codecentric</groupId>
-		    <artifactId>chaos-monkey-spring-boot</artifactId>
-		    <version>${chaos-monkey-spring-boot.version}</version>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot2</artifactId>
+			<version>${resilience4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>chaos-monkey-spring-boot</artifactId>
+			<version>${chaos-monkey-spring-boot.version}</version>
 		</dependency>
 
 		<dependency>

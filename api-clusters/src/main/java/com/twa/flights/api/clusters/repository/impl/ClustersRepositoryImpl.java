@@ -17,7 +17,6 @@ import com.twa.flights.api.clusters.dto.ClusterSearchDTO;
 import com.twa.flights.api.clusters.dto.response.PaginationDTO;
 import com.twa.flights.api.clusters.helper.FlightIdGeneratorHelper;
 import com.twa.flights.api.clusters.repository.ClustersRepository;
-import com.twa.flights.api.clusters.service.ZooKeeperService;
 import com.twa.flights.common.dto.itinerary.ItineraryDTO;
 import com.twa.flights.common.dto.request.AvailabilityRequestDTO;
 
@@ -31,21 +30,18 @@ public class ClustersRepositoryImpl implements ClustersRepository {
     private final RedisTemplate<String, ClusterSearchDTO> redisTemplate;
     private final ExecutorService executorService;
     private final FlightIdGeneratorHelper flightIdGeneratorHelper;
-    private final ZooKeeperService zooKeeperService;
 
     @Autowired
     public ClustersRepositoryImpl(RedisTemplate<String, ClusterSearchDTO> redisTemplate,
-            FlightIdGeneratorHelper flightIdGeneratorHelper, ZooKeeperService zooKeeperService) {
+            FlightIdGeneratorHelper flightIdGeneratorHelper) {
         this.flightIdGeneratorHelper = flightIdGeneratorHelper;
         this.executorService = Executors.newFixedThreadPool(10);
         this.redisTemplate = redisTemplate;
         this.valueOperations = redisTemplate.opsForValue();
-        this.zooKeeperService = zooKeeperService;
     }
 
     @Override
-    public ClusterSearchDTO insert(AvailabilityRequestDTO availabilityRequest, List<ItineraryDTO> itineraries,
-            String barrierPath) {
+    public ClusterSearchDTO insert(AvailabilityRequestDTO availabilityRequest, List<ItineraryDTO> itineraries) {
         LOGGER.debug("Insert all the information in the database");
 
         PaginationDTO pagination = new PaginationDTO(0, availabilityRequest.getAmount(), itineraries.size());
@@ -62,7 +58,6 @@ public class ClustersRepositoryImpl implements ClustersRepository {
 
                 connection.pSetEx(keySerializer.serialize(dataToInsert.getId()), TOKEN_TTL,
                         valueSerializer.serialize(dataToInsert));
-                zooKeeperService.deleteBarrier(barrierPath);
                 return null;
             });
         });

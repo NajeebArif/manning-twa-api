@@ -34,12 +34,6 @@ spring:
 redis:
    host: localhost
    port: 6079
-   
-zookeeper:
-  host: localhost:2181
-  maxRetries: 2
-  timeBetweenRetries: 100
-  connectionTimeout: 1000   
     
 connector:
    catalog:
@@ -56,4 +50,21 @@ connector:
       host: localhost:7070
       responseTimeout: 10000
       connectionTimeout: 10000
-      readTimeout: 10000         
+      readTimeout: 10000    
+      
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true  
+      ringBufferSizeInClosedState: 5
+      ringBufferSizeInHalfOpenState: 3
+      waitDurationInOpenState: 10000
+      failureRateThreshold: 50
+      recordExceptions:
+        - java.lang.RuntimeException
+        - java.lang.InterruptedException
+        - io.netty.handler.timeout.ReadTimeoutException
+        - org.springframework.web.reactive.function.client.WebClientRequestException
+  backends:
+    pricing:
+      baseConfig: default             

@@ -16,14 +16,6 @@ services:
     restart: always
     ports:
      - 6079:6379
-
-  api-clusters-zookeeper:
-    image: 'docker.io/bitnami/zookeeper:3-debian-10'
-    container_name: api-clusters-zookeeper
-    ports:
-      - '2181:2181'
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
      
   api-pricing-db:
     container_name: api-pricing-db

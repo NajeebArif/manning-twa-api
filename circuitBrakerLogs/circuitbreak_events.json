@@ -1,0 +1,68 @@
+{
+  "circuitBreakerEvents": [
+    {
+      "circuitBreakerName": "pricing",
+      "type": "SUCCESS",
+      "creationTime": "2021-03-03T17:41:43.906492Z[GMT]",
+      "errorMessage": null,
+      "durationInMs": 4588,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "pricing",
+      "type": "ERROR",
+      "creationTime": "2021-03-03T17:42:08.899663Z[GMT]",
+      "errorMessage": "com.twa.flights.api.clusters.exception.TWAException: Error while calling pricing endpoint",
+      "durationInMs": 67,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "pricing",
+      "type": "SUCCESS",
+      "creationTime": "2021-03-03T17:42:11.925958Z[GMT]",
+      "errorMessage": null,
+      "durationInMs": 158,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "pricing",
+      "type": "SUCCESS",
+      "creationTime": "2021-03-03T17:42:20.141134Z[GMT]",
+      "errorMessage": null,
+      "durationInMs": 5736,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "pricing",
+      "type": "ERROR",
+      "creationTime": "2021-03-03T17:42:24.135258Z[GMT]",
+      "errorMessage": "com.twa.flights.api.clusters.exception.TWAException: Error while calling pricing endpoint",
+      "durationInMs": 22,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "pricing",
+      "type": "ERROR",
+      "creationTime": "2021-03-03T17:42:25.718439Z[GMT]",
+      "errorMessage": "com.twa.flights.api.clusters.exception.TWAException: Error while calling pricing endpoint",
+      "durationInMs": 31,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "pricing",
+      "type": "FAILURE_RATE_EXCEEDED",
+      "creationTime": "2021-03-03T17:42:25.719270Z[GMT]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "pricing",
+      "type": "STATE_TRANSITION",
+      "creationTime": "2021-03-03T17:42:25.721639Z[GMT]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": "CLOSED_TO_OPEN"
+    }
+  ]
+}
